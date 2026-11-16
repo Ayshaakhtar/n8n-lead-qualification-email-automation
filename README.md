@@ -73,6 +73,30 @@ Successfully tested:
 - Speeds up sales-team communication.
 - Improves consistency in customer communication.
 
+
+## Workflow Screenshots
+
+### Complete n8n Workflow
+![Complete Workflow](screenshots/01-complete-workflow.png)
+
+### Customer Confirmation Email
+![Customer Email](screenshots/02-qualified-email.png)
+
+### Internal Sales Notification
+![Sales Notification](screenshots/03-sales-notification.png)
+
+### Qualified Lead Test
+![Qualified Lead](screenshots/04-qualified-test.png)
+
+### Unqualified Lead Test
+![Unqualified Lead](screenshots/05-unqualified-test.png)
+
+## Project Structure
+
+- `workflow/` - Sanitized n8n workflow JSON
+- `docs/` - Project documentation
+- `screenshots/` - Workflow and execution screenshots
+
 ## Author
 
 **Aysha Akter Mahin**
