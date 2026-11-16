@@ -1,0 +1,614 @@
+
+{
+  "name": "Lead Qualification Automation - Day 9",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-qualification-day9",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-5120, -1024],
+      "id": "479abe43-8d20-4ed3-8ac0-24f3c6ecd23b",
+      "name": "Lead Qualification Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "lead_name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "name": "company",
+              "value": "={{ $json.body.company }}",
+              "type": "string"
+            },
+            {
+              "name": "budget",
+              "value": "={{ $json.body.budget }}",
+              "type": "string"
+            },
+            {
+              "name": "product",
+              "value": "={{ $json.body.product }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-4944, -912],
+      "id": "96a37b3d-aacf-47e1-a5d9-5e2215af5852",
+      "name": "Format Lead Data"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [-4224, -768],
+      "id": "74609e4c-806f-4d66-ae4d-35525f565c8f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": 50000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-4656, -960],
+      "id": "33ca4d6e-659a-48ba-8427-0b6987ffdca8",
+      "name": "Lead Qualified?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "lead_status",
+              "value": "Qualified",
+              "type": "string"
+            },
+            {
+              "name": "lead_message",
+              "value": "=Hello {{ $json.lead_name }}, thank you for your interest in our {{ $json.product }}. Your lead has been qualified and our sales team will contact you shortly.",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "value": "Success",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-4512, -1072],
+      "id": "1da22783-7f7e-4102-9146-39fde47c5ccd",
+      "name": "Qualified Lead Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "lead_status",
+              "value": "Not Qualified",
+              "type": "string"
+            },
+            {
+              "name": "lead_message",
+              "value": "=Hello {{ $json.lead_name }}, thank you for your interest in our {{ $json.product }}. Our team will contact you with suitable options.",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "value": "Success",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-4480, -848],
+      "id": "e7d6c7ce-2e74-41b7-a678-fc2b5ded4c6a",
+      "name": "Follow-up Lead Message"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"{{ $json.status }}\",\n  \"lead_status\": \"{{ $json.lead_status }}\",\n  \"message\": \"{{ $json.lead_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [-3280, -624],
+      "id": "08a45012-4a3d-4b99-acd1-f2783f792d6a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-4320, -1040],
+      "id": "e51bf571-8b85-488b-a602-57e55ce2a863",
+      "name": "Preserve Qualified Lead Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "Name",
+              "value": "={{ $json.Lead_name }}"
+            },
+            {
+              "name": "Email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "Company",
+              "value": "={{ $json.company }}"
+            },
+            {
+              "name": "Budget",
+              "value": "={{ $json.budget }}"
+            },
+            {
+              "name": "Product",
+              "value": "={{ $json.Product }}"
+            },
+            {
+              "name": "Status",
+              "value": "={{ $json.Lead_Status }}"
+            },
+            {
+              "name": "Lead_message",
+              "value": "={{ $json.Lead_message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [-4128, -1072],
+      "id": "2bc2e406-0135-4e96-af61-ff6b9d907971",
+      "name": "Send Qualified Lead to External API",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.lead_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "leftValue": "={{ $json.company }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "leftValue": "={{ $json.product }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-4800, -832],
+      "id": "362f3fe1-a858-4b69-b1a2-17ee9baeeda7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "error",
+              "type": "string"
+            },
+            {
+              "name": "lead_status",
+              "value": "INVALID_LEAD_DATA",
+              "type": "string"
+            },
+            {
+              "name": "lead_message",
+              "value": "Required fields are missing. Please provide name, email, company, budget, and product.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-4656, -704],
+      "id": "20d2e94e-9f7e-4492-82a2-5e72fbdc1d25",
+      "name": "Invalid Lead Response"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_DOCUMENT_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead_name": "={{ $('Merge').item.json.lead_name }}",
+            "email": "={{ $('Merge').item.json.email }}",
+            "company": "={{ $('Merge').item.json.company }}",
+            "budget": "={{ $('Merge').item.json.budget }}",
+            "product": "={{ $('Merge').item.json.product }}",
+            "lead_status": "={{ $('Merge').item.json.lead_status }}",
+            "lead_message": "={{ $('Merge').item.json.lead_message }}",
+            "status": "={{ $('Merge').item.json.status }}",
+            "created_at": "={{ $now.toISO() }}",
+            "lead_id": "={{ $execution.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [-3520, -576],
+      "id": "54a2c87f-2b73-4ced-acc6-5bcb36b7eb81",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: $json.status, lead_status: $json.lead_status, lead_message: $json.lead_message } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [-4496, -512],
+      "id": "765558e3-836b-4f7f-b419-dc9babda387e",
+      "name": "Invalid Lead Response1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_DOCUMENT_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [-4096, -656],
+      "id": "e966da1d-cf4d-46f7-a862-e847fc9cd593",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-4000, -896],
+      "id": "822ed4da-551a-4f26-a80c-09e2c908974d",
+      "name": "Duplicate Lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "status",
+              "value": "Error",
+              "type": "string"
+            },
+            {
+              "name": "lead_status",
+              "value": "DUPLICATE_LEAD",
+              "type": "string"
+            },
+            {
+              "name": "message",
+              "value": "This lead already exists in our tracker.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [-3808, -1024],
+      "id": "84bd7bf1-0819-4437-b4bd-e378771bb4d2",
+      "name": "Duplicate Lead Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: $json.status, lead_status: $json.lead_status, message: $json.message } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [-3600, -1008],
+      "id": "48da1613-0d0c-4314-9880-5bbfc8959f8c",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Merge').item.json.email }}",
+        "subject": "Your lead has been qualified!",
+        "emailType": "text",
+        "message": "={{ \"Hello \" + $('Merge').item.json.lead_name + \",\\n\\n\" + \"Thank you for your interest in our \" + $('Merge').item.json.product + \". Your lead has been qualified and our sales team will contact you shortly.\\n\\nBest regards,\\nSales Team\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [-3664, -848],
+      "id": "2254823a-ee33-4228-960e-f35dff529ea2",
+      "name": "Send a message",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Merge').item.json.lead_status }}",
+              "rightValue": "Qualified",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [-3856, -736],
+      "id": "4ee2fafc-cede-4fc5-9df1-b4c1a514dced",
+      "name": "Is Lead Qualified?"
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_SALES_TEAM_EMAIL",
+        "subject": "=New Qualified Lead - {{ $('Merge').item.json.lead_name }}",
+        "emailType": "text",
+        "message": "={{ \"A new qualified lead has arrived!\\n\\n\" + \"Name: \" + $('Merge').item.json.lead_name + \"\\n\" + \"Email: \" + $('Merge').item.json.email + \"\\n\" + \"Company: \" + $('Merge').item.json.company + \"\\n\" + \"Budget: \" + $('Merge').item.json.budget + \"\\n\" + \"Product: \" + $('Merge').item.json.product + \"\\n\" + \"Lead Status: \" + $('Merge').item.json.lead_status }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [-3488, -816],
+      "id": "fc963287-1e79-40b6-a55a-28ceda41f32d",
+      "name": "Notify Sales Team",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Lead Qualification Webhook": {
+      "main": [[{"node": "Format Lead Data", "type": "main", "index": 0}]]
+    },
+    "Format Lead Data": {
+      "main": [[{"node": "If", "type": "main", "index": 0}]]
+    },
+    "Lead Qualified?": {
+      "main": [
+        [{"node": "Qualified Lead Message", "type": "main", "index": 0}],
+        [{"node": "Follow-up Lead Message", "type": "main", "index": 0}]
+      ]
+    },
+    "Qualified Lead Message": {
+      "main": [[{"node": "Preserve Qualified Lead Data", "type": "main", "index": 0}]]
+    },
+    "Follow-up Lead Message": {
+      "main": [[{"node": "Merge", "type": "main", "index": 1}]]
+    },
+    "Merge": {
+      "main": [[{"node": "Get row(s) in sheet", "type": "main", "index": 0}]]
+    },
+    "Preserve Qualified Lead Data": {
+      "main": [
+        [
+          {"node": "Merge", "type": "main", "index": 0},
+          {"node": "Send Qualified Lead to External API", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [{"node": "Lead Qualified?", "type": "main", "index": 0}],
+        [{"node": "Invalid Lead Response", "type": "main", "index": 0}]
+      ]
+    },
+    "Invalid Lead Response": {
+      "main": [[{"node": "Invalid Lead Response1", "type": "main", "index": 0}]]
+    },
+    "Append row in sheet": {
+      "main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]
+    },
+    "Get row(s) in sheet": {
+      "main": [[{"node": "Duplicate Lead", "type": "main", "index": 0}]]
+    },
+    "Duplicate Lead": {
+      "main": [
+        [{"node": "Duplicate Lead Response", "type": "main", "index": 0}],
+        [{"node": "Is Lead Qualified?", "type": "main", "index": 0}]
+      ]
+    },
+    "Invalid Lead Response1": {
+      "main": [[]]
+    },
+    "Duplicate Lead Response": {
+      "main": [[{"node": "Respond to Webhook1", "type": "main", "index": 0}]]
+    },
+    "Respond to Webhook": {
+      "main": [[]]
+    },
+    "Is Lead Qualified?": {
+      "main": [
+        [{"node": "Send a message", "type": "main", "index": 0}],
+        [{"node": "Append row in sheet", "type": "main", "index": 0}]
+      ]
+    },
+    "Send a message": {
+      "main": [[{"node": "Notify Sales Team", "type": "main", "index": 0}]]
+    },
+    "Notify Sales Team": {
+      "main": [[{"node": "Append row in sheet", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "tags": []
+}
