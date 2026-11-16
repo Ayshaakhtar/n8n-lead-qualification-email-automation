@@ -85,11 +85,8 @@ Successfully tested:
 ### Internal Sales Notification
 ![Sales Notification](screenshots/03-sales-notification.png)
 
-### Qualified Lead Test
-![Qualified Lead](screenshots/04-qualified-test.png)
-
-### Unqualified Lead Test
-![Unqualified Lead](screenshots/05-unqualified-test.png)
+### 04-invalid-test.png
+![Qualified Lead](screenshots/04-invalid-test.png)
 
 ## Project Structure
 
